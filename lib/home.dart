@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'models/post.dart';
+import 'widgets/posts_list_view.dart';
 
 class HomePage extends StatelessWidget {
   final String title;
@@ -11,7 +13,16 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
       ),
-      body: Container()
+      body: FutureBuilder<List<Post>>(
+        future: fetchPosts(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) print(snapshot.error);
+
+          return snapshot.hasData
+              ? PostsListView(posts: snapshot.data)
+              : Center(child: CircularProgressIndicator());
+        },
+      ),
     );
   }
 }
