@@ -11,36 +11,52 @@ class PostsListView extends StatefulWidget {
 }
 
 class _PostsListViewState extends State<PostsListView> {
+  List<Post> mutablePosts; // need to be mutable upon pull to refresh
+
+  @override
+  void initState() {
+    super.initState();
+    mutablePosts = widget.posts;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
+      child: RefreshIndicator(
           child: ListView.builder(
-              itemCount: widget.posts.length,
+              itemCount: mutablePosts.length,
               padding: const EdgeInsets.fromLTRB(15, 10, 0, 0),
               itemBuilder: (context, position) {
                 return Column(
                   children: <Widget>[
                     ListTile(
                         title: Text(
-                          '${widget.posts[position].date}',
+                          '${mutablePosts[position].date}',
                           style: TextStyle(
                             fontSize: 22.0,
                             color: Colors.blueGrey,
                           ),
                         ),
                         subtitle: Text(
-                          '${widget.posts[position].weatherStateName}',
+                          '${mutablePosts[position].weatherStateName}',
                           style: new TextStyle(
                             fontSize: 18.0,
                             fontStyle: FontStyle.italic,
                           ),
                         ),
-                        leading: Image.asset('assets/images/${widget.posts[position].weatherStateAbbr}.png')
+                        leading: Image.asset('assets/images/${mutablePosts[position].weatherStateAbbr}.png')
                     ),
                     Divider(height: 5.0),
                   ],
                 );
               }),
+          onRefresh: _refresh
+      )
     );
+  }
+
+  Future<void> _refresh() async {
+    mutablePosts =  await fetchPosts();
+    setState(() {});
   }
 }
