@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:connectivity/connectivity.dart';
+import '../utils/constants.dart';
+import '../components/toasts.dart';
 
 /// Use the factory constructor fromJson to extract;
 /// the weather name, weather abbreviation, and date from the JSON response.
@@ -78,13 +81,29 @@ class Post {
 /// Fetch a list of Posts using the MetaWeather API
 /// If Connected to Internet:
 ///   Returns 6 Posts: 1 for today and 5 for the next 5 days
-/// Else:
-///   Returns an empty list
-Future<List<Post>> fetchPosts(int woeid) async {
+/// If not connected OR no response OR an invalid response:
+///   Returns an empty list and shows Toast with error to user.
+Future<List<Post>> fetchPosts(String woeid) async {
+  List<Post> posts = [];
   var connectivityResult = await Connectivity().checkConnectivity();
-  return connectivityResult == ConnectivityResult.none
-    ? []
-    : createPosts((await http.Client().get('https://www.metaweather.com/api/location/$woeid/')).body);
+  if (connectivityResult == ConnectivityResult.none) {
+    blueGreyToast(NO_INTERNET_MSG);
+  } else {
+    try {
+      final jsonResponse = await http.Client().get(META_WEATHER_ADDRESS + woeid);
+      posts = createPosts(jsonResponse.body);
+    } on SocketException {
+      blueGreyToast(SOCKET_EXCEPTION_MSG);
+    } on NoSuchMethodError {
+      blueGreyToast(DATA_HANDLING_ERROR_MSG);
+    } on FormatException {
+      blueGreyToast(DATA_HANDLING_ERROR_MSG);
+    } catch (e) {
+      // TODO: Handle other possible exceptions
+      blueGreyToast(e.toString());
+    }
+  }
+  return posts;
 }
 
 /// Converts a MetaWeather JSON response to a List of Post instances

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
 import '../models/post.dart';
 import '../utils/constants.dart';
 import 'toasts.dart';
@@ -64,19 +63,11 @@ class _PostsListViewState extends State<PostsListView> {
 
   /// _refresh is called when the user pulls down on the screen
   Future<void> _refresh() async {
-    try {
-      mutablePosts =  await fetchPosts(BELFAST_WOE_ID);
-      // only redraw widget if data is available
-      if (mutablePosts.isNotEmpty) {
-        setState(() {});
-        blueGreyToast(FORECAST_UPDATED_MSG);
-      } else {
-        blueGreyToast(NO_INTERNET_MSG);
-      }
-    } on SocketException catch (_) {
-      blueGreyToast(SOCKET_EXCEPTION_MSG);
-    } catch (e) {
-      blueGreyToast("${e.runtimeType} Error");
+    mutablePosts =  await fetchPosts(BELFAST_WOE_ID);
+    // only redraw widget if data is available
+    if (mutablePosts.isNotEmpty) {
+      setState(() {});
+      blueGreyToast(FORECAST_UPDATED_MSG);
     }
   }
 
