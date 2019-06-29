@@ -80,13 +80,11 @@ class Post {
 ///   Returns 6 Posts: 1 for today and 5 for the next 5 days
 /// Else:
 ///   Returns an empty list
-Future<List<Post>> fetchPosts() async {
-  final belfastWoeid = 44544;
-
+Future<List<Post>> fetchPosts(int woeid) async {
   var connectivityResult = await Connectivity().checkConnectivity();
   return connectivityResult == ConnectivityResult.none
     ? []
-    : createPosts((await http.Client().get('https://www.metaweather.com/api/location/$belfastWoeid/')).body);
+    : createPosts((await http.Client().get('https://www.metaweather.com/api/location/$woeid/')).body);
 }
 
 /// Converts a MetaWeather JSON response to a List of Post instances
