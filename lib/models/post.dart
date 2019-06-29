@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:connectivity/connectivity.dart';
 
 /// Use the factory constructor fromJson to extract;
 /// the weather name, weather abbreviation, and date from the JSON response.
@@ -74,14 +75,18 @@ class Post {
   }
 }
 
-/// Fetch a List of Posts using the MetaWeather API
-/// Returns 6 Posts: 1 for today and 5 for the next 5 days
+/// Fetch a list of Posts using the MetaWeather API
+/// If Connected to Internet:
+///   Returns 6 Posts: 1 for today and 5 for the next 5 days
+/// Else:
+///   Returns an empty list
 Future<List<Post>> fetchPosts() async {
   final belfastWoeid = 44544;
 
-  final jsonResponse = await http.Client().get('https://www.metaweather.com/api/location/$belfastWoeid/');
-
-  return createPosts(jsonResponse.body);
+  var connectivityResult = await Connectivity().checkConnectivity();
+  return connectivityResult == ConnectivityResult.none
+    ? []
+    : createPosts((await http.Client().get('https://www.metaweather.com/api/location/$belfastWoeid/')).body);
 }
 
 /// Converts a MetaWeather JSON response to a List of Post instances

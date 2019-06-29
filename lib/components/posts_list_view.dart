@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import '../models/post.dart';
 import 'toasts.dart';
-import 'package:connectivity/connectivity.dart';
 
 class PostsListView extends StatefulWidget {
   final List<Post> posts;
@@ -58,15 +58,20 @@ class _PostsListViewState extends State<PostsListView> {
   }
 
   Future<void> _refresh() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      blueGreyToast("No Internet Connection");
-    } else {
+    try {
       mutablePosts =  await fetchPosts();
-      setState(() {});
-      blueGreyToast("Forecast Updated");
+      // only redraw widget if data is available
+      if (mutablePosts.isNotEmpty) {
+        setState(() {});
+        blueGreyToast("Forecast Updated");
+      } else {
+        blueGreyToast("No Internet Connection");
+      }
+    } on SocketException catch (_) {
+      blueGreyToast("MetaWeather Server Error");
+    } catch (e) {
+      blueGreyToast("${e.runtimeType} Error");
     }
-
-
   }
+
 }

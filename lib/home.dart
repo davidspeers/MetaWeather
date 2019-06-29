@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'models/post.dart';
 import 'components/posts_list_view.dart';
+import 'components/toasts.dart';
+import 'dart:io';
 
 class HomePage extends StatelessWidget {
   final String title;
@@ -16,7 +18,18 @@ class HomePage extends StatelessWidget {
       body: FutureBuilder<List<Post>>(
         future: fetchPosts(),
         builder: (context, snapshot) {
-          if (snapshot.hasError) print(snapshot.error);
+          if (snapshot.hasError) {
+            if (snapshot.error.runtimeType == SocketException) {
+              blueGreyToast("MetaWeather Server Error");
+            } else {
+              blueGreyToast("${snapshot.error.runtimeType} Error");
+            }
+            return PostsListView(posts: []);
+          }
+
+          if (snapshot.hasData && snapshot.data.isEmpty) {
+            blueGreyToast("No Internet Connection");
+          }
 
           return snapshot.hasData
               ? PostsListView(posts: snapshot.data)
