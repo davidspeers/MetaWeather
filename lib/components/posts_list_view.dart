@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/post.dart';
+import 'toasts.dart';
+import 'package:connectivity/connectivity.dart';
 
 class PostsListView extends StatefulWidget {
   final List<Post> posts;
@@ -11,7 +13,7 @@ class PostsListView extends StatefulWidget {
 }
 
 class _PostsListViewState extends State<PostsListView> {
-  List<Post> mutablePosts; // need to be mutable upon pull to refresh
+  List<Post> mutablePosts; // need to be mutable for pull to refresh
 
   @override
   void initState() {
@@ -56,7 +58,15 @@ class _PostsListViewState extends State<PostsListView> {
   }
 
   Future<void> _refresh() async {
-    mutablePosts =  await fetchPosts();
-    setState(() {});
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      blueGreyToast("No Internet Connection");
+    } else {
+      mutablePosts =  await fetchPosts();
+      setState(() {});
+      blueGreyToast("Forecast Updated");
+    }
+
+
   }
 }

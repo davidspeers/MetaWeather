@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'models/post.dart';
-import 'widgets/posts_list_view.dart';
+import 'components/posts_list_view.dart';
 
 class HomePage extends StatelessWidget {
   final String title;
