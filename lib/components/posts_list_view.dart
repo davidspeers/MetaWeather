@@ -29,11 +29,15 @@ class _PostsListViewState extends State<PostsListView> {
               itemCount: mutablePosts.length,
               padding: const EdgeInsets.fromLTRB(15, 10, 0, 0),
               itemBuilder: (context, position) {
+                String titleText = '${mutablePosts[position].date}';
+                if (position == 0) titleText += " (Today)";
+                if (position == 1) titleText += " (Tomorrow)";
+
                 return Column(
                   children: <Widget>[
                     ListTile(
                         title: Text(
-                          '${mutablePosts[position].date}',
+                          titleText,
                           style: TextStyle(
                             fontSize: 22.0,
                             color: Colors.blueGrey,
