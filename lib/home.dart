@@ -19,6 +19,7 @@ class HomePage extends StatelessWidget {
       body: FutureBuilder<List<Post>>(
         future: fetchPosts(BELFAST_WOE_ID),
         builder: (context, snapshot) {
+
           if (snapshot.hasError) {
             if (snapshot.error.runtimeType == SocketException) {
               blueGreyToast(SOCKET_EXCEPTION_MSG);
@@ -28,9 +29,7 @@ class HomePage extends StatelessWidget {
             return PostsListView(posts: []);
           }
 
-          if (snapshot.hasData && snapshot.data.isEmpty) {
-            blueGreyToast(NO_INTERNET_MSG);
-          }
+          if (snapshot.hasData && snapshot.data.isEmpty) blueGreyToast(NO_INTERNET_MSG);
 
           return snapshot.hasData
               ? PostsListView(posts: snapshot.data)
