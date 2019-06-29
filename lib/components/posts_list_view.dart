@@ -12,6 +12,8 @@ class PostsListView extends StatefulWidget {
   _PostsListViewState createState() => _PostsListViewState();
 }
 
+/// Displays a List of Posts with their weather name, weather image and date
+/// The list can be refreshed by pulling down on the screen, which calls fetchPost
 class _PostsListViewState extends State<PostsListView> {
   List<Post> mutablePosts; // need to be mutable for pull to refresh
 
