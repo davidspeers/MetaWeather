@@ -62,6 +62,7 @@ class _PostsListViewState extends State<PostsListView> {
     );
   }
 
+  /// _refresh is called when the user pulls down on the screen
   Future<void> _refresh() async {
     try {
       mutablePosts =  await fetchPosts(BELFAST_WOE_ID);
