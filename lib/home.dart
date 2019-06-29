@@ -19,9 +19,9 @@ class _HomePageState extends State<HomePage> {
 
   void initState() {
     super.initState();
-    /// This function is executed one time, after the initial layout is built.
-    /// This approach was required instead of a FutureBuilder because using a
-    /// FutureBuilder was calling the fetchPosts method multiple times upon startup.
+    // This function is executed one time, after the initial layout is built.
+    // This approach was required instead of a FutureBuilder because using a
+    // FutureBuilder was calling the fetchPosts method multiple times upon startup.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       List<Post> posts = await fetchPosts(BELFAST_WOE_ID);
       setState(() {
