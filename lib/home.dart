@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'models/weather.dart';
 import 'components/weathers_list_view.dart';
 import 'utils/constants.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   final String title;
@@ -23,7 +24,7 @@ class _HomePageState extends State<HomePage> {
     // This approach was required instead of a FutureBuilder because using a
     // FutureBuilder was calling the getWeatherForecast method multiple times upon startup.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      List<Weather> weathers = await getWeatherForecast(BELFAST_WOE_ID);
+      List<Weather> weathers = await getWeatherForecast(http.Client(), BELFAST_WOE_ID);
       setState(() {
         body = WeathersListView(weathers: weathers);
       });

@@ -15,6 +15,22 @@ class Weather {
 
   Weather({this.name, this.abbreviation, this.date});
 
+  // Override == so that different instances with the same values return true.
+  // This simplifies equality checking for the unit tests.
+  // https://dart.dev/guides/language/effective-dart/design#equality
+  // https://medium.com/@ayushpguptaapg/demystifying-and-hashcode-in-dart-2f328d1ab1bc
+  @override
+  bool operator == (Object other) =>
+      identical(this, other) ||
+          other is Weather &&
+              runtimeType == other.runtimeType &&
+              name == other.name &&
+              abbreviation == other.abbreviation &&
+              date == other.date;
+
+  @override
+  int get hashCode => name.hashCode^abbreviation.hashCode^date.hashCode;
+
   factory Weather.fromJson(Map<String, dynamic> json) {
 
     /// date will be in the form YYYY-MM-DD
@@ -83,14 +99,14 @@ class Weather {
 ///   Returns 6 Weather instances: 1 for today and 5 for the next 5 days
 /// If not connected OR no response OR an invalid response:
 ///   Returns an empty list and shows Toast with error to user.
-Future<List<Weather>> getWeatherForecast(String woeid) async {
+Future<List<Weather>> getWeatherForecast(http.Client client, String woeid) async {
   List<Weather> weathers = [];
   var connectivityResult = await Connectivity().checkConnectivity();
   if (connectivityResult == ConnectivityResult.none) {
     blueGreyToast(NO_INTERNET_MSG);
   } else {
     try {
-      final jsonResponse = await http.Client().get(META_WEATHER_ADDRESS + woeid);
+      final jsonResponse = await client.get(META_WEATHER_ADDRESS + woeid);
       weathers = convertJsonToWeathers(jsonResponse.body);
     } on SocketException {
       blueGreyToast(SOCKET_EXCEPTION_MSG);

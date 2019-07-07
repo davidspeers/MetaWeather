@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/weather.dart';
 import '../utils/constants.dart';
 import 'toasts.dart';
+import 'package:http/http.dart' as http;
 
 class WeathersListView extends StatefulWidget {
   final List<Weather> weathers;
@@ -65,7 +66,7 @@ class _WeathersListViewState extends State<WeathersListView> {
 
   /// _refresh is called when the user pulls down on the screen
   Future<void> _refresh() async {
-    mutableWeathers =  await getWeatherForecast(BELFAST_WOE_ID);
+    mutableWeathers =  await getWeatherForecast(http.Client(), BELFAST_WOE_ID);
     // only redraw widget if data is available
     if (mutableWeathers.isNotEmpty) {
       setState(() {});
