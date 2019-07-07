@@ -24,7 +24,7 @@ class Weather {
       List<String> yearMonthDay = date.split('-');
 
       String day = yearMonthDay[2];
-      if (day[0] == '0') day.substring(1);
+      if (day[0] == '0') day = day.substring(1);
 
       String string = "$day ";
 
