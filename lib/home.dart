@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'models/post.dart';
-import 'components/posts_list_view.dart';
+import 'models/weather.dart';
+import 'components/weathers_list_view.dart';
 import 'utils/constants.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,11 +21,11 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     // This function is executed one time, after the initial layout is built.
     // This approach was required instead of a FutureBuilder because using a
-    // FutureBuilder was calling the fetchPosts method multiple times upon startup.
+    // FutureBuilder was calling the getWeatherForecast method multiple times upon startup.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      List<Post> posts = await fetchPosts(BELFAST_WOE_ID);
+      List<Weather> weathers = await getWeatherForecast(BELFAST_WOE_ID);
       setState(() {
-        body = PostsListView(posts: posts);
+        body = WeathersListView(weathers: weathers);
       });
     });
   }

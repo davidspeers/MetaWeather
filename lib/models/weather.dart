@@ -7,15 +7,15 @@ import '../utils/constants.dart';
 import '../components/toasts.dart';
 
 /// Use the factory constructor fromJson to extract;
-/// the weather name, weather abbreviation, and date from the JSON response.
-class Post {
-  final String weatherStateName;
-  final String weatherStateAbbr;
+/// the weather name, abbreviation, and date from the JSON response.
+class Weather {
+  final String name;
+  final String abbreviation;
   final String date;
 
-  Post({this.weatherStateName, this.weatherStateAbbr, this.date});
+  Weather({this.name, this.abbreviation, this.date});
 
-  factory Post.fromJson(Map<String, dynamic> json) {
+  factory Weather.fromJson(Map<String, dynamic> json) {
 
     /// date will be in the form YYYY-MM-DD
     /// this function converts the date to a more readable format
@@ -70,28 +70,28 @@ class Post {
       return string;
     }
 
-    return Post(
-      weatherStateName: json['weather_state_name'] as String,
-      weatherStateAbbr: json['weather_state_abbr'] as String,
+    return Weather(
+      name: json['weather_state_name'] as String,
+      abbreviation: json['weather_state_abbr'] as String,
       date: dateToString(json['applicable_date'] as String)
     );
   }
 }
 
-/// Fetch a list of Posts using the MetaWeather API
+/// Get a list of Weather instances using the MetaWeather API
 /// If Connected to Internet:
-///   Returns 6 Posts: 1 for today and 5 for the next 5 days
+///   Returns 6 Weather instances: 1 for today and 5 for the next 5 days
 /// If not connected OR no response OR an invalid response:
 ///   Returns an empty list and shows Toast with error to user.
-Future<List<Post>> fetchPosts(String woeid) async {
-  List<Post> posts = [];
+Future<List<Weather>> getWeatherForecast(String woeid) async {
+  List<Weather> weathers = [];
   var connectivityResult = await Connectivity().checkConnectivity();
   if (connectivityResult == ConnectivityResult.none) {
     blueGreyToast(NO_INTERNET_MSG);
   } else {
     try {
       final jsonResponse = await http.Client().get(META_WEATHER_ADDRESS + woeid);
-      posts = createPosts(jsonResponse.body);
+      weathers = convertJsonToWeathers(jsonResponse.body);
     } on SocketException {
       blueGreyToast(SOCKET_EXCEPTION_MSG);
     } on NoSuchMethodError {
@@ -103,19 +103,19 @@ Future<List<Post>> fetchPosts(String woeid) async {
       blueGreyToast(e.toString());
     }
   }
-  return posts;
+  return weathers;
 }
 
-/// Converts a MetaWeather JSON response to a List of Post instances
-List<Post> createPosts(String responseBody) {
-  List<Post> posts = new List<Post>();
+/// Converts a MetaWeather JSON response to a List of Weather instances
+List<Weather> convertJsonToWeathers(String responseBody) {
+  List<Weather> weathers = new List<Weather>();
 
   var decodedJson = json.decode(responseBody);
   List weatherForecast = decodedJson["consolidated_weather"];
 
   weatherForecast.forEach((day) {
-    posts.add(Post.fromJson(day));
+    weathers.add(Weather.fromJson(day));
   });
 
-  return posts;
+  return weathers;
 }

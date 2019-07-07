@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
-import '../models/post.dart';
+import '../models/weather.dart';
 import '../utils/constants.dart';
 import 'toasts.dart';
 
-class PostsListView extends StatefulWidget {
-  final List<Post> posts;
+class WeathersListView extends StatefulWidget {
+  final List<Weather> weathers;
 
-  PostsListView({Key key, this.posts}) : super(key: key);
+  WeathersListView({Key key, this.weathers}) : super(key: key);
 
   @override
-  _PostsListViewState createState() => _PostsListViewState();
+  _WeathersListViewState createState() => _WeathersListViewState();
 }
 
-/// Displays a List of Posts with their weather name, weather image and date
-/// The list can be refreshed by pulling down on the screen, which calls fetchPost
-class _PostsListViewState extends State<PostsListView> {
-  List<Post> mutablePosts; // need to be mutable for pull to refresh
+/// Displays a List of Weather instances with their name, image and date
+/// The list can be refreshed by pulling down on the screen, which calls getWeatherForecast
+class _WeathersListViewState extends State<WeathersListView> {
+  List<Weather> mutableWeathers; // need to be mutable for pull to refresh
 
   @override
   void initState() {
     super.initState();
-    mutablePosts = widget.posts;
+    mutableWeathers = widget.weathers;
   }
 
   @override
@@ -28,10 +28,10 @@ class _PostsListViewState extends State<PostsListView> {
     return Container(
       child: RefreshIndicator(
           child: ListView.builder(
-              itemCount: mutablePosts.length,
+              itemCount: mutableWeathers.length,
               padding: const EdgeInsets.fromLTRB(15, 10, 0, 0),
               itemBuilder: (context, position) {
-                String titleText = '${mutablePosts[position].date}';
+                String titleText = '${mutableWeathers[position].date}';
                 if (position == 0) titleText += " (Today)";
                 if (position == 1) titleText += " (Tomorrow)";
 
@@ -46,13 +46,13 @@ class _PostsListViewState extends State<PostsListView> {
                           ),
                         ),
                         subtitle: Text(
-                          '${mutablePosts[position].weatherStateName}',
+                          '${mutableWeathers[position].name}',
                           style: new TextStyle(
                             fontSize: 18.0,
                             fontStyle: FontStyle.italic,
                           ),
                         ),
-                        leading: Image.asset('assets/images/${mutablePosts[position].weatherStateAbbr}.png')
+                        leading: Image.asset('assets/images/${mutableWeathers[position].abbreviation}.png')
                     ),
                     Divider(height: 5.0),
                   ],
@@ -65,9 +65,9 @@ class _PostsListViewState extends State<PostsListView> {
 
   /// _refresh is called when the user pulls down on the screen
   Future<void> _refresh() async {
-    mutablePosts =  await fetchPosts(BELFAST_WOE_ID);
+    mutableWeathers =  await getWeatherForecast(BELFAST_WOE_ID);
     // only redraw widget if data is available
-    if (mutablePosts.isNotEmpty) {
+    if (mutableWeathers.isNotEmpty) {
       setState(() {});
       blueGreyToast(FORECAST_UPDATED_MSG);
     }
